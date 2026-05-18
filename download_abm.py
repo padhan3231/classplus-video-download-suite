@@ -76,6 +76,11 @@ def is_network_error(msg):
                                        "connection reset", "no route to host",
                                        "name resolution", "temporary failure",
                                        "broken pipe", "eof", "reset by peer"))
+def is_permanent_api_error(msg):
+    """True if API returns a permanent 'not downloadable' error (don't retry)."""
+    lower = msg.lower()
+    return any(kw in lower for kw in ("something went wrong", "not found",
+                                       "invalid content", "not available"))
 
 def resolve_url(chash, token):
     """Resolve signed URL with retries on network failure."""
@@ -97,6 +102,8 @@ def resolve_url(chash, token):
                 msg = d.get("message", str(d))
                 if is_auth_error(msg):
                     raise RuntimeError(f"AUTH_FAIL:{msg}")
+                if is_permanent_api_error(msg):
+                    raise RuntimeError(f"PERMANENT:{msg}")
                 raise RuntimeError(f"API: {msg}")
             return d["url"]
         except requests.exceptions.Timeout as e:
@@ -253,7 +260,6 @@ def main():
                 break
             except Exception as e:
                 msg = str(e)
-                # Clean partial file
                 if os.path.exists(out_file):
                     os.remove(out_file)
 
@@ -263,6 +269,13 @@ def main():
                     save_progress(done)
                     return
 
+                if is_permanent_api_error(msg):
+                    print(f"  ✗ NOT DOWNLOADABLE: {msg[:150]}")
+                    done.add(chash)
+                    save_progress(done)
+                    success = False
+                    break
+
                 if attempt < MAX_RETRIES:
                     wait = RETRY_BACKOFF[min(attempt, len(RETRY_BACKOFF)-1)]
                     print(f"  ⚡ retry {attempt+1}/{MAX_RETRIES} in {wait}s ({msg[:100]})")
@@ -271,7 +284,6 @@ def main():
                     print(f"  ✗ FAILED after {MAX_RETRIES} retries: {msg[:200]}")
 
         if not success:
-            # Save progress so we skip this failed video on restart
             print(f"  (skipping — will retry on next run)")
             save_progress(done)
 
