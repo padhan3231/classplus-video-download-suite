@@ -1,0 +1,43 @@
+# ── Downloaded videos ──
+videos/
+*.mp4
+*.m4v
+*.mkv
+*.webm
+*.ts
+*.m3u8
+
+# ── Python ──
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+.venv/
+venv/
+
+# ── Progress & metadata (personal session data) ──
+*_progress.json
+*_metadata.json
+*_metadata.csv
+
+# ── Temp / cache ──
+/tmp/
+*.log
+
+# ── IDE ──
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ── OS ──
+.DS_Store
+Thumbs.db
+
+# ── Playwright ──
+playwright_classplus_profile/
+
+# ── Sensitive (tokens, API keys) ──
+*_manifest.json
+.env
