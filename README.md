@@ -195,9 +195,9 @@ flowchart TD
     A[Browser session<br/>classplusapp.com] --> B{Token capture}
     B -->|console snippet| C1[classplus-grab.js<br/>cpGrab.all]
     B -->|automated| C2[crawl_course.py<br/>Playwright + persistent profile]
-    C2 --> D[/tmp/classplus_manifest.json<br/>JWT + endpoints]
+    C2 --> D["/tmp/classplus_manifest.json<br/>JWT + endpoints"]
     D --> E[crawl_all.py<br/>recursive folder API]
-    E --> F[/tmp/classplus_video_manifest.json<br/>all videos]
+    E --> F["/tmp/classplus_video_manifest.json<br/>all videos"]
     F --> G[download_abm.py<br/>subject bulk]
     F --> H[bulk_download.py<br/>all-subject bulk]
     G --> I[jw-signed-url API<br/>→ signed m3u8]
