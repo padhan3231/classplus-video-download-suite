@@ -1,1 +1,1 @@
-worker: python3 bulk_download.py
+worker: python3 bot.py
